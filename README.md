@@ -1,6 +1,6 @@
 # environment
 ## python 3.6.9
-https://www.python.org/downloads/release/python-369/
+https://www.python.org/downloads/release/python-3811/
 ## requirements
 pip install -r requirements.txt
 ## jupyter run
