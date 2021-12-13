@@ -1,7 +1,11 @@
 # environment
-## python 3.6.9
+## python 3.8
 https://www.python.org/downloads/release/python-3811/
 ## requirements
-pip install -r requirements.txt
+- `conda create env -n mlisuct`
+- `conda activate mlisuct`
+- `conda env update -n mlisuct --file ENV.yaml`
 ## jupyter run
-jupyter lab/notebook --port 0000 path_to_folder
+`jupyter lab --port <your port> path_to_folder`
+## fix completer
+`%config Completer.use_jedi=False`
