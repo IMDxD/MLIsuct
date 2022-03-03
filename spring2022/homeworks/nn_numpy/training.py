@@ -1,3 +1,5 @@
+from time import perf_counter
+
 import numpy as np
 from sklearn.metrics import accuracy_score
 from torchvision.datasets import MNIST
@@ -5,8 +7,8 @@ from torchvision.datasets import MNIST
 from layers import LinearLayer, ReLU, SoftmaxCE, Graph
 
 
-EPOCH = 0 # your value
-LEARNING_RATE = 0 # your value
+EPOCH = # your value
+LEARNING_RATE = # your value
 
 
 def to_numpy(x):
@@ -31,17 +33,19 @@ graph = Graph(layers=layers, learning_rate=LEARNING_RATE)
 
 
 for epoch in range(EPOCH):
-
-    for x, y in train_dataset:
+    start = perf_counter()
+    idxs = np.arange(len(train_dataset))
+    np.random.shuffle(idxs)
+    for i in idxs:
+        x, y = train_dataset[i]
         graph.forward(x)
         graph.backward(y)
-
+        
     y_true = []
     y_pred = []
 
-    for x, y in train_dataset:
+    for x, y in valid_dataset:
         out = graph.forward(x)
-        graph.backward(y)
         y_true.append(y)
         y_pred.append(out.argmax())
 
