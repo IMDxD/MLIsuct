@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from re import L
 from typing import List
 
 import numpy as np
@@ -7,7 +6,7 @@ import numpy as np
 
 def weights_initialization(input_size, output_size):
     # USE BETTER INITIALIZATION
-    return np.zeros((input_size, output_size))
+    return np.random.normal(0, 1/np.sqrt(input_size), size=(input_size, output_size))
 
 
 class Layer(ABC):
@@ -30,8 +29,8 @@ class LinearLayer(Layer):
         self.data = None # Think what you need to store here
 
     def forward(self, x):
-        # Store data what you need and compute x @ W + b (@ - DOT PRODUCT)
-        return
+        self.data = x
+        return x.dot(self.weights) + self.biases
 
     def backward(self, out, learning_rate):
         # dL/dW = x.T @ out
@@ -40,7 +39,12 @@ class LinearLayer(Layer):
         # W = W - lr * dL/dW
         # b = b - lr * dL/db
         # update weight and biases with respect to gradient and return gradient with respect to input
-        return 
+        grad_w = self.data.reshape(-1, 1).dot(out.reshape(1, -1))
+        grad_x = out.dot(self.weights.T)
+        grad_b = out
+        self.weights -= learning_rate * grad_w
+        self.biases -= learning_rate * grad_b
+        return grad_x
 
 
 class ReLU(Layer):
@@ -49,12 +53,12 @@ class ReLU(Layer):
         self.data = None # Think what you need to store here
 
     def forward(self, x):
-        # Store data what you need and compute z = x if x >=0 else 0 (look for numpy where)
-        return
+        self.data = x
+        return np.where(x > 0, x, 0)
 
     def backward(self, out, learning_rate):
         # dL/dz = (1 if x >=0 else 0) * out (think what is x)
-        return 
+        return np.where(self.data > 0, 1, 0) * out
 
 
 class SoftmaxCE(Layer):
@@ -64,11 +68,15 @@ class SoftmaxCE(Layer):
 
     def forward(self, x):
         # Store data what you need and compute S[i] = exp^x_i / sum(exp^x_i)
-        return
+        exp_x = np.exp(x - np.max(x))
+        self.data = exp_x / np.sum(exp_x)
+        return self.data
 
     def backward(self, out, learning_rate):
         # dL/dz = S[k] - y[k] if your out is a constant (more probable) your just need to do S[k] = S[k] - 1 (k is a class index)
-        return 
+        s = self.data.copy()
+        s[out] -= 1
+        return s
 
 
 class Graph:
